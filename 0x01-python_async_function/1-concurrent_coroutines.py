@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This module contains the `wait_n` coroutine that spawns multiple instances of `wait_random`
+The modle contains the `wait_n` coroutine tht spawns multiples of `wait_random`
 and returns their results in ascending order.
 """
 
@@ -24,15 +24,14 @@ async def wait_n(n: int, max_delay: int) -> List[float]:
     """
     delays = []
     heap = []
-    
+
     async def task_wrapper():
         delay = await wait_random(max_delay)
         heappush(heap, delay)
-    
     tasks = [task_wrapper() for _ in range(n)]
     await asyncio.gather(*tasks)
-    
+
     while heap:
         delays.append(heappop(heap))
-    
+
     return delays
