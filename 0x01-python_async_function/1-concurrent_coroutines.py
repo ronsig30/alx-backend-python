@@ -5,8 +5,12 @@ of an asynchronous task and returns their results in ascending order.
 """
 
 import asyncio
+import importlib
 from typing import List
-from 0-basic_async_syntax import wait_random
+
+# Use importlib to import the module
+basic_async_syntax = importlib.import_module('0-basic_async_syntax')
+wait_random = basic_async_syntax.wait_random
 
 
 async def wait_n(n: int, max_delay: int) -> List[float]:
@@ -22,7 +26,7 @@ async def wait_n(n: int, max_delay: int) -> List[float]:
         List[float]: A list of delay times in ascending order.
     """
     delays = []
-    # Use asyncio.gather to run multiple coroutines concurrently
+    # Use asyncio.create_task to run multiple coroutines concurrently
     for _ in range(n):
         delays.append(asyncio.create_task(wait_random(max_delay)))
 
