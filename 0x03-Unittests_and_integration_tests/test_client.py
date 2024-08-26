@@ -46,27 +46,32 @@ class TestGithubOrgClient(unittest.TestCase):
         expected_url = "https://api.github.com/orgs/test_org/repos"
         self.assertEqual(result, expected_url)
 
-    @patch('client.GithubOrgClient._public_repos_url', new_callable=PropertyMock)
     @patch('client.get_json')
-    def test_public_repos(self, mock_get_json, mock_public_repos_url):
-        """Test that GithubOrgClient.public_repos returns the correct list of r
-        epos"""
-        # Arrange
-        mock_public_repos_url.return_value = "https://api.github.com/orgs/test_org/repos"
+    @patch('client.GithubOrgClient._public_repos_url', new_callable=PropertyMock)
+    def test_public_repos(self, mock_public_repos_url, mock_get_json):
+        """Test that public_repos returns the correct list of repos"""
+        # Define a mock payload to be returned by get_json
         mock_payload = [
-            {"name": "repo1"},
-            {"name": "repo2"},
-            {"name": "repo3"},
+            {"name": "repo1", "license": {"key": "my_license"}},
+            {"name": "repo2", "license": {"key": "other_license"}},
+            {"name": "repo3"}
         ]
         mock_get_json.return_value = mock_payload
 
-        # Act
+        # Set the return value of the mocked _public_repos_url property
+        mock_public_repos_url.return_value = "https://api.github.com/orgs/test_org/repos"
+            
+        # Instantiate the GithubOrgClient
         client = GithubOrgClient("test_org")
-        repos = client.public_repos()
 
-        # Assert
+        # Call public_repos method
+        result = client.public_repos()
+
+        # Check that the result is as expected
         expected_repos = ["repo1", "repo2", "repo3"]
-        self.assertEqual(repos, expected_repos)
+        self.assertEqual(result, expected_repos)
+
+        # Check that the mocked property and get_json were called once
         mock_public_repos_url.assert_called_once()
         mock_get_json.assert_called_once_with("https://api.github.com/orgs/test_org/repos")
 
